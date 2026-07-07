@@ -1,0 +1,28 @@
+<section class="tracker-main">
+    <section class="actions" style="{{actionStyle}}">
+        {{#if hasReaction}}
+        <button type="button" class="{{reactionClass}}" style="{{reactionStyle}}" data-type="reaction" aria-label="{{localize "ThreeActionTracker.Reaction"}}"></button>
+        {{/if}}
+
+        {{#each actionPayload}}
+        <button type="button" class="{{this.cssClass}}" data-type="action" data-index="{{this.number}}" aria-label="{{localize "ThreeActionTracker.Action"}} {{this.number}}"></button>
+        {{/each}}
+
+        <button type="button" class="tracker-tool reset-actions" title="{{localize "ThreeActionTracker.Reset"}}">
+            <i class="fas fa-rotate-left"></i>
+        </button>
+        <button type="button" class="tracker-tool dying-toggle {{#if isDying}}active{{/if}}" title="{{dyingButtonLabel}}">
+            <i class="fas fa-skull"></i>
+        </button>
+    </section>
+
+    <section class="wounds" aria-label="{{localize "ThreeActionTracker.Wounds"}}">
+        {{#each woundPayload}}
+        <button type="button" class="{{this.cssClass}}" data-index="{{this.number}}" aria-label="{{localize "ThreeActionTracker.Wound"}} {{this.number}}"></button>
+        {{/each}}
+
+        <button type="button" class="tracker-tool wound-recover" title="{{localize "ThreeActionTracker.RecoverWound"}}">
+            ZZZ
+        </button>
+    </section>
+</section>

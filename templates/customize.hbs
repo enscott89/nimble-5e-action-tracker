@@ -1,0 +1,40 @@
+<form class="three-action-customize">
+    <div class="form-group">
+        <label>{{localize "ThreeActionTracker.CustomTitle"}}</label>
+        <input type="text" name="title" value="{{title}}">
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "ThreeActionTracker.ActionsLabel"}}</label>
+        <input type="number" name="numOfActions" min="0" max="10" step="1" value="{{numOfActions}}">
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "ThreeActionTracker.ActionColor"}}</label>
+        <input type="color" name="actionColor" value="{{actionColor}}">
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "ThreeActionTracker.Reaction"}}</label>
+        <label class="actor-checkbox">
+            <input type="checkbox" name="hasReaction" {{checked hasReaction}}>
+            {{localize "ThreeActionTracker.UseReaction"}}
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "ThreeActionTracker.ReactionColor"}}</label>
+        <input type="color" name="reactionColor" value="{{reactionColor}}">
+    </div>
+
+    <div class="form-group actor-setting">
+        <label>{{localize "ThreeActionTracker.Actor"}}</label>
+        <div class="actor-setting-body">
+            <span>{{actorName}}</span>
+            <label class="actor-checkbox">
+                <input type="checkbox" name="linkSelectedActor">
+                {{localize "ThreeActionTracker.UseSelectedActor"}}
+            </label>
+        </div>
+    </div>
+</form>

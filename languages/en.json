@@ -1,0 +1,63 @@
+{
+  "ThreeActionTracker": {
+    "WindowTitle": "Nimble Actions",
+    "ButtonName": "Nimble Actions",
+    "ButtonHint": "Open action tracker",
+    "Actions": "Actions:",
+    "ActionsLabel": "Actions",
+    "Action": "Action",
+    "Reaction": "Reaction",
+    "UseReaction": "Use optional reaction",
+    "DyingMode": "Dying",
+    "EnableDyingMode": "Enter Dying mode",
+    "DisableDyingMode": "Leave Dying mode",
+    "Wounds": "Wounds",
+    "Wound": "Wound",
+    "RecoverWound": "Remove one wound",
+    "Reset": "Reset",
+    "Actor": "Actor",
+    "LinkActor": "Link Actor",
+    "RelinkActor": "Relink Actor",
+    "LinkActorShort": "Link",
+    "RelinkActorShort": "Actor",
+    "NoActorSelected": "Select a token with an actor first.",
+    "NoLinkedActor": "Not linked",
+    "UseSelectedActor": "Use selected token",
+    "Show": "Show",
+    "ShowPermissions": "Show with Permissions",
+    "Duplication": "Duplicate",
+    "SentToChat": "Send to Chat",
+    "Customize": "Customize",
+    "Save": "Save",
+    "Cancel": "Cancel",
+    "CustomTitle": "Name",
+    "ActionColor": "Action Color",
+    "ReactionColor": "Reaction Color",
+    "SentFrom": "sent from",
+    "UnknownUser": "unknown user",
+    "Settings": {
+      "TrackerName": "Default tracker name",
+      "TrackerNameHint": "The name used for new action tracker windows.",
+      "DefaultActions": "Default actions",
+      "DefaultActionsHint": "How many action symbols new tracker windows start with.",
+      "ActionColor": "Default action color",
+      "ActionColorHint": "Hex color used for action symbols in new tracker windows.",
+      "ReactionColor": "Default reaction color",
+      "ReactionColorHint": "Hex color used for the optional reaction symbol in new tracker windows.",
+      "DuplicateSetting": "Show duplicate button",
+      "DuplicateHint": "Whether action tracker windows include a duplicate button.",
+      "ShowPlayerSetting": "Show player button behavior",
+      "ShowPlayerHint": "Choose whether the show button opens a player picker, sends the tracker to chat, or stays hidden.",
+      "ShowPlayerChoices": {
+        "Hide": "Hide Button",
+        "Normal": "Popup Dialog",
+        "Chat": "Send Actions to Chat"
+      }
+    }
+  },
+  "selectiveshow": {
+    "Show": "Show",
+    "ShowAll": "Show All",
+    "SelectiveShow": "Selective Show"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "nimble-5e-action-tracker",
+  "title": "Nimble 5E Action Tracker",
+  "description": "A manual actor-aware action tracker for Nimble 5E.",
+  "version": "1.1.0",
+  "url": "https://github.com/enscott89/nimble-5e-action-tracker",
+  "manifest": "https://raw.githubusercontent.com/enscott89/nimble-5e-action-tracker/main/module.json",
+  "download": "https://github.com/enscott89/nimble-5e-action-tracker/releases/download/v1.1.0/module.zip",
+  "authors": [
+    {
+      "name": "Adapted for Nimble 5E"
+    }
+  ],
+  "compatibility": {
+    "minimum": "12",
+    "verified": "14"
+  },
+  "scripts": [
+    "main.js"
+  ],
+  "styles": [
+    "styles/module.css",
+    "styles/styles.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ]
+}

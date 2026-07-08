@@ -607,13 +607,15 @@ function settingSetup() {
 }
 
 function addSceneControlButton(controls) {
+  const onActivate = () => openTrackerForSelection();
   const tool = {
     name: "three-action-tracker",
     title: "ThreeActionTracker.ButtonHint",
     icon: "fas fa-list-check",
     button: true,
     visible: true,
-    onClick: () => openTrackerForSelection()
+    onClick: onActivate,
+    onChange: onActivate
   };
 
   if (Array.isArray(controls)) {
@@ -623,9 +625,16 @@ function addSceneControlButton(controls) {
   }
 
   const tokenControls = controls.tokens ?? controls.token;
-  if (tokenControls?.tools instanceof Map) tokenControls.tools.set(tool.name, tool);
-  else if (Array.isArray(tokenControls?.tools)) tokenControls.tools.push(tool);
-  else if (tokenControls?.tools && typeof tokenControls.tools === "object") tokenControls.tools[tool.name] = tool;
+  if (tokenControls?.tools instanceof Map) {
+    tool.order = tokenControls.tools.size;
+    tokenControls.tools.set(tool.name, tool);
+  } else if (Array.isArray(tokenControls?.tools)) {
+    tool.order = tokenControls.tools.length;
+    tokenControls.tools.push(tool);
+  } else if (tokenControls?.tools && typeof tokenControls.tools === "object") {
+    tool.order = Object.keys(tokenControls.tools).length;
+    tokenControls.tools[tool.name] = tool;
+  }
 }
 
 function openTrackerForSelection() {

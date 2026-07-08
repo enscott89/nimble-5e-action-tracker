@@ -1,5 +1,4 @@
 const moduleId = "nimble-5e-action-tracker";
-const legacyModuleId = "3-action-tracker";
 const socketEvent = `module.${moduleId}`;
 
 function localize(key) {
@@ -50,13 +49,37 @@ function countClassEntries(list, className) {
 }
 
 function createActorTrackerState(actor) {
-  const savedState = actor.getFlag(moduleId, "trackerState") ?? actor.getFlag(legacyModuleId, "trackerState") ?? {};
+  let savedState = {};
+  try {
+    savedState = actor.getFlag(moduleId, "trackerState") ?? {};
+  } catch (error) {
+    console.warn(`${moduleId} | Could not read actor tracker flags`, error);
+  }
+
+  if (!savedState || typeof savedState !== "object" || Array.isArray(savedState)) savedState = {};
+
   return createTrackerState({
     ...savedState,
-    trackerId: actor.uuid,
+    trackerId: actor.uuid ?? actor.id ?? foundry.utils.randomID(),
     title: savedState.title ?? actor.name,
     actorUuid: actor.uuid
   });
+}
+
+function createSelectedTokenTrackerState(token) {
+  const actor = token?.actor;
+  if (!actor) return createHomeTrackerState();
+
+  try {
+    return createActorTrackerState(actor);
+  } catch (error) {
+    console.warn(`${moduleId} | Falling back to unlinked token tracker`, error);
+    return createTrackerState({
+      trackerId: token.document?.uuid ?? token.id ?? actor.id ?? foundry.utils.randomID(),
+      title: actor.name ?? token.name ?? game.settings.get(moduleId, "trackerName"),
+      actorUuid: actor.uuid
+    });
+  }
 }
 
 function createHomeTrackerState() {
@@ -93,6 +116,10 @@ function getSelectedActor() {
   return token?.actor ?? null;
 }
 
+function getSelectedToken() {
+  return canvas?.tokens?.controlled?.[0] ?? null;
+}
+
 function getActorName(actorUuid) {
   if (!actorUuid || typeof fromUuidSync !== "function") return localize("ThreeActionTracker.NoLinkedActor");
   const actor = fromUuidSync(actorUuid);
@@ -109,6 +136,20 @@ function normalizeUserIds(users) {
 
 function hasTrackerPermission(state) {
   return normalizeUserIds(state.userListPermissions).includes(game.userId);
+}
+
+function renderTracker(app, options = {}) {
+  if (!app) {
+    ui.notifications?.error("Action tracker is not ready yet. Reload Foundry and try again.");
+    return;
+  }
+
+  try {
+    return app.render(true, { focus: false, ...options });
+  } catch (error) {
+    console.error(`${moduleId} | Failed to render tracker`, error);
+    ui.notifications?.error(`Action tracker failed to open: ${error.message}`);
+  }
 }
 
 class SelectiveShowApp extends FormApplication {
@@ -448,10 +489,14 @@ class ThreeActionTracker extends Application {
   async saveState() {
     const persistedState = toPersistedState(this.state);
     if (this.state.actorUuid && typeof fromUuidSync === "function") {
-      const actor = fromUuidSync(this.state.actorUuid);
-      if (actor?.setFlag) {
-        await actor.setFlag(moduleId, "trackerState", persistedState);
-        return;
+      try {
+        const actor = fromUuidSync(this.state.actorUuid);
+        if (actor?.setFlag) {
+          await actor.setFlag(moduleId, "trackerState", persistedState);
+          return;
+        }
+      } catch (error) {
+        console.warn(`${moduleId} | Could not save tracker state on actor`, error);
       }
     }
 
@@ -472,7 +517,7 @@ class ThreeActionTracker extends Application {
 
 function handleShowToAll(data) {
   const dialog = checkAndBuildApp(data);
-  dialog.render(true, { id: `ThreeActionTracker-${data.state.trackerId}`, focus: false });
+  renderTracker(dialog, { id: `ThreeActionTracker-${data.state.trackerId}` });
 }
 
 function handleShowToSelection(data) {
@@ -503,7 +548,7 @@ function handleDuplication(data) {
 
   const dialog = new ThreeActionTracker(newState);
   getModuleStore().push(dialog);
-  dialog.render(true, { id: `ThreeActionTracker-${newState.trackerId}`, focus: false });
+  renderTracker(dialog, { id: `ThreeActionTracker-${newState.trackerId}` });
 }
 
 function handleSendToChat(data) {
@@ -638,15 +683,43 @@ function addSceneControlButton(controls) {
 }
 
 function openTrackerForSelection() {
-  const actor = getSelectedActor();
-  if (!actor) {
-    homeTracker.render(true, { focus: false });
-    return;
-  }
+  try {
+    const token = getSelectedToken();
+    if (!token?.actor) {
+      renderTracker(homeTracker);
+      return;
+    }
 
-  const data = { state: createActorTrackerState(actor) };
-  const app = checkAndBuildApp(data);
-  app.render(true, { id: `ThreeActionTracker-${actor.id}`, focus: false });
+    const data = { state: createSelectedTokenTrackerState(token) };
+    const app = checkAndBuildApp(data);
+    renderTracker(app, { id: `ThreeActionTracker-${data.state.trackerId}` });
+  } catch (error) {
+    console.error(`${moduleId} | Failed to open tracker`, error);
+    ui.notifications?.error(`Action tracker failed before opening: ${error.message}`);
+  }
+}
+
+function addSceneControlFallbackListener(_app, html) {
+  const root = html instanceof HTMLElement ? html : html?.[0];
+  if (!root) return;
+
+  const selector = [
+    '[data-tool="three-action-tracker"]',
+    '[data-action="three-action-tracker"]',
+    '[name="three-action-tracker"]',
+    '[aria-label="Open action tracker"]',
+    '[title="Open action tracker"]'
+  ].join(",");
+
+  const button = root.querySelector(selector);
+  if (!button || button.dataset.nimbleTrackerBound === "true") return;
+
+  button.dataset.nimbleTrackerBound = "true";
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openTrackerForSelection();
+  });
 }
 
 let homeTracker;
@@ -657,10 +730,16 @@ Hooks.once("init", () => {
 });
 
 Hooks.on("getSceneControlButtons", addSceneControlButton);
+Hooks.on("renderSceneControls", addSceneControlFallbackListener);
 
 Hooks.on("ready", () => {
+  game.modules.get(moduleId).api = {
+    open: openTrackerForSelection
+  };
+
   homeTracker = new ThreeActionTracker(createHomeTrackerState());
   getModuleStore().push(homeTracker);
+  console.log(`${moduleId} | Ready`);
 
   game.socket?.on(socketEvent, (data) => {
     switch (data.operation) {

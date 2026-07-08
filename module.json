@@ -2,10 +2,10 @@
   "id": "nimble-5e-action-tracker",
   "title": "Nimble 5E Action Tracker",
   "description": "A manual actor-aware action tracker for Nimble 5E.",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "url": "https://github.com/enscott89/nimble-5e-action-tracker",
-  "manifest": "https://github.com/enscott89/nimble-5e-action-tracker/releases/download/v1.1.2/module.json",
-  "download": "https://github.com/enscott89/nimble-5e-action-tracker/releases/download/v1.1.2/module.zip",
+  "manifest": "https://github.com/enscott89/nimble-5e-action-tracker/releases/download/v1.1.3/module.json",
+  "download": "https://github.com/enscott89/nimble-5e-action-tracker/releases/download/v1.1.3/module.zip",
   "authors": [
     {
       "name": "Adapted for Nimble 5E"
